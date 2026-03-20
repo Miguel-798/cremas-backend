@@ -1,0 +1,23 @@
+# Uvicorn configuration for development
+# Run with: uvicorn src.api.main:app --reload --reload-dir src --reload-dir alembic --reload-dir config.yaml --reload-exclude "Local Settings/*"
+
+host: "0.0.0.0"
+port: 8000
+reload: true
+
+# Directories to watch for changes
+reload_dirs:
+  - "src"
+  - "alembic"
+  - "config.yaml"
+
+# Directories to ignore (VS Code and IDE noise)
+reload_excludes:
+  - "**/Local Settings/**"
+  - "**/.vs/**"
+  - "**/__pycache__/**"
+  - "**/.git/**"
+  - "**/node_modules/**"
+
+log_level: "info"
+access_log: true

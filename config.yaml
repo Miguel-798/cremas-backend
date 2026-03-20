@@ -1,0 +1,44 @@
+# Cremas Inventory - Configuration
+
+app:
+  name: "Cremas Inventory"
+  version: "1.0.0"
+  debug: true
+  env: ${ENV}
+  allowed_origins:
+    - "http://localhost:3000"
+    - "https://cremas-sigma.vercel.app"
+
+database:
+  url: ${DATABASE_URL}
+  pool_size: 10
+  max_overflow: 20
+  pool_timeout: 30
+  pool_recycle: 1800
+  echo: false
+
+supabase:
+  url: ${SUPABASE_URL}
+  anon_key: ${SUPABASE_ANON_KEY}
+  service_role_key: ${SUPABASE_SERVICE_ROLE_KEY}
+
+notifications:
+  gmail:
+    enabled: true
+    client_id: ${GMAIL_CLIENT_ID}
+    client_secret: ${GMAIL_CLIENT_SECRET}
+    refresh_token: ${GMAIL_REFRESH_TOKEN}
+    from_email: ${GMAIL_FROM_EMAIL}
+    to_email: ${GMAIL_TO_EMAIL}
+
+business:
+  low_stock_threshold: 3
+  reservation_expiry_days: 2
+
+cache:
+  enabled: false  # Enable with CACHE_ENABLED=true env var
+  default_ttl: 60  # seconds
+  # Key format: "gentleman:{domain}:{identifier}"
+  # TTLs per domain:
+  #   creams: 60s, cream_by_id: 120s, low_stock: 30s
+  #   reservations: 30s, sales: 30s

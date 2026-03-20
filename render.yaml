@@ -5,6 +5,7 @@ services:
   - type: web
     name: gentleman-api
     runtime: python
+    pythonVersion: "3.12"
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt

@@ -166,6 +166,7 @@ async def get_all_creams(
         CreamWithStatus(
             id=c.id,
             flavor_name=c.flavor_name,
+            price=c.price,
             quantity=c.quantity,
             is_low_stock=c.is_low_stock(threshold),
             created_at=c.created_at,
@@ -214,6 +215,7 @@ async def create_cream(
     try:
         cream = await service.create_cream(
             flavor_name=data.flavor_name,
+            price=data.price,
             quantity=data.quantity,
         )
         return CreamResponse.model_validate(cream)

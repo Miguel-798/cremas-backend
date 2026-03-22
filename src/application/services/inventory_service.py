@@ -60,14 +60,14 @@ class InventoryService:
             )
         return cream
     
-    async def create_cream(self, flavor_name: str, quantity: int = 0) -> Cream:
+    async def create_cream(self, flavor_name: str, price: float = 0.0, quantity: int = 0) -> Cream:
         """Crear una nueva crema."""
         # Verificar que no exista
         existing = await self.cream_repo.get_by_flavor_name(flavor_name)
         if existing:
             raise ValueError(f"Ya existe una crema con el sabor: {flavor_name}")
         
-        cream = Cream(flavor_name=flavor_name, quantity=quantity)
+        cream = Cream(flavor_name=flavor_name, price=price, quantity=quantity)
         result = await self.cream_repo.create(cream)
         
         # Invalidate cache

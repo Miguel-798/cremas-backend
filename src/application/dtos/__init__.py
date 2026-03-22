@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class CreamCreate(BaseModel):
     """DTO para crear una nueva crema."""
     flavor_name: str = Field(..., min_length=1, max_length=255, description="Nombre del sabor")
+    price: float = Field(default=0.0, ge=0, description="Precio de la crema")
     quantity: int = Field(default=0, ge=0, description="Cantidad inicial")
 
 
@@ -35,6 +36,7 @@ class CreamResponse(BaseModel):
     """DTO para responder con datos de crema."""
     id: UUID
     flavor_name: str
+    price: float
     quantity: int
     created_at: datetime
     updated_at: datetime
@@ -46,6 +48,7 @@ class CreamWithStatus(BaseModel):
     """DTO para crema con estado de alerta."""
     id: UUID
     flavor_name: str
+    price: float
     quantity: int
     is_low_stock: bool
     created_at: datetime

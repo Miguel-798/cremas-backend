@@ -15,6 +15,7 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     Index,
+    Numeric,
 )
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -48,6 +49,7 @@ class CreamModel(Base):
     
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     flavor_name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    price: Mapped[float] = mapped_column(Numeric(10, 2), default=0.00, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(

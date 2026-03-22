@@ -17,6 +17,7 @@ class Cream:
     Attributes:
         id: Identificador único UUID
         flavor_name: Nombre del sabor (ej: "Chocolate Blanco")
+        price: Precio de la crema (float)
         quantity: Cantidad actual en inventario
         created_at: Fecha de creación del registro
         updated_at: Última fecha de modificación
@@ -24,6 +25,7 @@ class Cream:
     
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     flavor_name: str = ""
+    price: float = 0.0
     quantity: int = 0
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime = field(default_factory=datetime.utcnow)
@@ -35,6 +37,9 @@ class Cream:
         
         if self.quantity < 0:
             raise ValueError("La cantidad no puede ser negativa")
+        
+        if self.price < 0:
+            raise ValueError("El precio no puede ser negativo")
         
         self.flavor_name = self.flavor_name.strip()
     

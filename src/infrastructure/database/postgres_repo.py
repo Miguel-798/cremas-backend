@@ -4,6 +4,7 @@ PostgreSQL Repository Implementations - Infrastructure Layer
 Implementa las interfaces del dominio usando SQLAlchemy.
 """
 from datetime import datetime, date
+from decimal import Decimal
 from typing import List, Optional
 from uuid import UUID
 
@@ -27,6 +28,7 @@ class PostgresCreamRepository(CreamRepository):
         return Cream(
             id=UUID(model.id),
             flavor_name=model.flavor_name,
+            price=float(model.price),
             quantity=model.quantity,
             created_at=model.created_at,
             updated_at=model.updated_at,
@@ -37,6 +39,7 @@ class PostgresCreamRepository(CreamRepository):
         return CreamModel(
             id=str(entity.id),
             flavor_name=entity.flavor_name,
+            price=float(entity.price),
             quantity=entity.quantity,
             created_at=entity.created_at,
             updated_at=entity.updated_at,
@@ -77,6 +80,7 @@ class PostgresCreamRepository(CreamRepository):
         model = result.scalar_one_or_none()
         if model:
             model.flavor_name = cream.flavor_name
+            model.price = float(cream.price)
             model.quantity = cream.quantity
             model.updated_at = datetime.utcnow()
             await self.session.commit()

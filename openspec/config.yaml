@@ -1,0 +1,14 @@
+# OpenSpec Configuration
+# https://github.com/nicoleh大人的/openspec
+
+artifact_store:
+  mode: openspec
+
+paths:
+  changes: openspec/changes
+  archive: openspec/archive
+  specs: openspec/specs
+
+conventions:
+  branch_prefix: "sdd/"
+  artifact_suffix: ".md"

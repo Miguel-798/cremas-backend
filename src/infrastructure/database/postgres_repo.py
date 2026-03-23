@@ -121,6 +121,7 @@ class PostgresSaleRepository(SaleRepository):
             cream_id=UUID(model.cream_id),
             cream_name=model.cream_name,
             quantity_sold=model.quantity_sold,
+            price=model.price,
             sold_at=model.sold_at,
         )
     
@@ -130,6 +131,7 @@ class PostgresSaleRepository(SaleRepository):
             cream_id=str(entity.cream_id),
             cream_name=entity.cream_name,
             quantity_sold=entity.quantity_sold,
+            price=entity.price,
             sold_at=entity.sold_at,
         )
     

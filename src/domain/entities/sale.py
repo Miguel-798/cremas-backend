@@ -18,6 +18,8 @@ class Sale:
         cream_id: UUID de la crema vendida
         cream_name: Nombre del sabor (denormalizado para histórico)
         quantity_sold: Cantidad de cremas vendidas
+        price: Precio de la crema al momento de la venta
+        total: Total de la venta (price × quantity_sold)
         sold_at: Fecha y hora de la venta
     """
     
@@ -25,6 +27,7 @@ class Sale:
     cream_id: uuid.UUID = field(default_factory=uuid.uuid4)
     cream_name: str = ""
     quantity_sold: int = 0
+    price: float = 0.0
     sold_at: datetime = field(default_factory=datetime.utcnow)
     
     def __post_init__(self):

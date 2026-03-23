@@ -85,6 +85,7 @@ class SaleModel(Base):
     cream_id: Mapped[str] = mapped_column(String(36), ForeignKey("creams.id"), nullable=False)
     cream_name: Mapped[str] = mapped_column(String(255), nullable=False)
     quantity_sold: Mapped[int] = mapped_column(Integer, nullable=False)
+    price: Mapped[float] = mapped_column(Numeric(10, 2), default=0.0, nullable=False)
     sold_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     
     __table_args__ = (

@@ -154,15 +154,20 @@ class InventoryService:
                 f"solicitado: {quantity_sold}"
             )
         
-        # Descontar stock
+# Descontar stock
         cream.remove_stock(quantity_sold)
         await self.cream_repo.update(cream)
+        
+        # Capture price at sale time
+        price = cream.price
+        total = price * quantity_sold
         
         # Crear registro de venta
         sale = Sale(
             cream_id=cream_id,
             cream_name=cream.flavor_name,
             quantity_sold=quantity_sold,
+            price=price,
         )
         result = await self.sale_repo.create(sale)
         

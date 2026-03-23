@@ -6,8 +6,7 @@ Data Transfer Objects para la API.
 from datetime import datetime, date
 from typing import Optional
 from uuid import UUID
-
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 
 
 # ============================================
@@ -74,9 +73,18 @@ class SaleResponse(BaseModel):
     cream_id: UUID
     cream_name: str
     quantity_sold: int
+    price: float = 0.0
+    total: float = 0.0
     sold_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+    
+    @model_validator(mode='after')
+    def compute_total(self):
+        """Compute total automatically from price × quantity if not provided."""
+        if self.total == 0 and self.price > 0:
+            self.total = self.price * self.quantity_sold
+        return self
 
 
 # ============================================

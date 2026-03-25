@@ -4,9 +4,14 @@ Cream Entity - Domain Layer
 Representa un sabor de crema en el inventario.
 """
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 import uuid
+
+
+def _utc_now() -> datetime:
+    """Return current UTC time as timezone-aware datetime."""
+    return datetime.now(timezone.utc)
 
 
 @dataclass
@@ -27,8 +32,8 @@ class Cream:
     flavor_name: str = ""
     price: float = 0.0
     quantity: int = 0
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=_utc_now)
+    updated_at: datetime = field(default_factory=_utc_now)
     
     def __post_init__(self):
         """Validaciones post-construcción."""
@@ -48,7 +53,7 @@ class Cream:
         if amount <= 0:
             raise ValueError("La cantidad a agregar debe ser mayor a 0")
         self.quantity += amount
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
     
     def remove_stock(self, amount: int) -> None:
         """Remover stock del inventario (venta)."""
@@ -57,7 +62,7 @@ class Cream:
         if amount > self.quantity:
             raise ValueError(f"No hay suficiente stock. Disponible: {self.quantity}, solicitado: {amount}")
         self.quantity -= amount
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
     
     def is_low_stock(self, threshold: int = 3) -> bool:
         """Verificar si el stock está bajo."""

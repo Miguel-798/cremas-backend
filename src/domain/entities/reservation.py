@@ -4,9 +4,14 @@ Reservation Entity - Domain Layer
 Representa un apartado/reserva de cremas para un cliente.
 """
 from dataclasses import dataclass, field
-from datetime import datetime, date
+from datetime import datetime, timezone, date
 from typing import Optional
 import uuid
+
+
+def _utc_now() -> datetime:
+    """Return current UTC time as timezone-aware datetime."""
+    return datetime.now(timezone.utc)
 
 
 @dataclass
@@ -32,7 +37,7 @@ class Reservation:
     reserved_for: date = field(default_factory=date.today)
     customer_name: Optional[str] = None
     is_active: bool = True
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=_utc_now)
     
     def __post_init__(self):
         """Validaciones post-construcción."""

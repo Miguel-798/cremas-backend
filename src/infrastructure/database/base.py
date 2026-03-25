@@ -3,8 +3,13 @@ Database Base - Infrastructure Layer
 
 Define los modelos SQLAlchemy y la configuración de la base de datos.
 """
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import AsyncGenerator
+
+
+def _utc_now() -> datetime:
+    """Return current UTC time as timezone-aware datetime."""
+    return datetime.now(timezone.utc)
 
 from sqlalchemy import (
     create_engine,
@@ -51,11 +56,11 @@ class CreamModel(Base):
     flavor_name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     price: Mapped[float] = mapped_column(Numeric(10, 2), default=0.00, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utc_now)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, 
-        default=datetime.utcnow, 
-        onupdate=datetime.utcnow
+        DateTime(timezone=True), 
+        default=_utc_now, 
+        onupdate=_utc_now
     )
     
     __table_args__ = (
@@ -86,7 +91,7 @@ class SaleModel(Base):
     cream_name: Mapped[str] = mapped_column(String(255), nullable=False)
     quantity_sold: Mapped[int] = mapped_column(Integer, nullable=False)
     price: Mapped[float] = mapped_column(Numeric(10, 2), default=0.0, nullable=False)
-    sold_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    sold_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utc_now)
     
     __table_args__ = (
         Index("ix_sales_cream_id", "cream_id"),
@@ -109,7 +114,7 @@ class ReservationModel(Base):
     reserved_for: Mapped[date] = mapped_column(Date, nullable=False)
     customer_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utc_now)
     
     __table_args__ = (
         Index("ix_reservations_cream_id", "cream_id"),

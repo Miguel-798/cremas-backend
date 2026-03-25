@@ -132,7 +132,12 @@ class InventoryService:
     # Sale Operations
     # ============================================
     
-    async def register_sale(self, cream_id: UUID, quantity_sold: int) -> Sale:
+    async def register_sale(
+        self, 
+        cream_id: UUID, 
+        quantity_sold: int, 
+        manual_price: Optional[float] = None
+    ) -> Sale:
         """
         Registrar una venta.
         
@@ -140,6 +145,7 @@ class InventoryService:
         1. Verifica que haya stock suficiente
         2. Descuenta el stock automáticamente
         3. Crea el registro de venta
+        4. Usa el precio manual si se proporciona, si no usa el precio de la crema
         """
         cream = await self.cream_repo.get_by_id(cream_id)
         if not cream:
@@ -158,8 +164,8 @@ class InventoryService:
         cream.remove_stock(quantity_sold)
         await self.cream_repo.update(cream)
         
-        # Capture price at sale time
-        price = cream.price
+        # Use manual price if provided, otherwise use cream's price
+        price = manual_price if manual_price is not None else cream.price
         total = price * quantity_sold
         
         # Crear registro de venta

@@ -352,7 +352,7 @@ async def register_sale(
         )
     
     try:
-        sale = await service.register_sale(cream_id, data.quantity_sold)
+        sale = await service.register_sale(cream_id, data.quantity_sold, data.price)
         
         # Check for low stock after sale
         low_stock = await service.get_low_stock_creams()

@@ -6,7 +6,24 @@ Data Transfer Objects para la API.
 from datetime import datetime, date
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator, field_serializer
+
+
+# Pydantic config for timezone-aware datetime handling
+DTOS_CONFIG = ConfigDict(
+    from_attributes=True,
+)
+
+
+# Field serializer for datetime fields - ensures ISO 8601 format with timezone
+def serialize_datetime(dt: datetime) -> str:
+    """Serialize datetime to ISO 8601 string."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        # Naive datetime - assume UTC
+        return dt.isoformat()
+    return dt.isoformat()
 
 
 # ============================================
@@ -40,7 +57,14 @@ class CreamResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = DTOS_CONFIG
+    
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, dt: datetime) -> str:
+        """Serialize datetime to ISO 8601 string."""
+        if dt is None:
+            return None
+        return dt.isoformat()
 
 
 class CreamWithStatus(BaseModel):
@@ -53,7 +77,14 @@ class CreamWithStatus(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = DTOS_CONFIG
+    
+    @field_serializer('created_at', 'updated_at')
+    def serialize_datetime(self, dt: datetime) -> str:
+        """Serialize datetime to ISO 8601 string."""
+        if dt is None:
+            return None
+        return dt.isoformat()
 
 
 # ============================================
@@ -65,6 +96,7 @@ class SaleCreate(BaseModel):
     """DTO para registrar una venta."""
     cream_id: UUID = Field(..., description="ID de la crema")
     quantity_sold: int = Field(..., gt=0, description="Cantidad vendida")
+    price: Optional[float] = Field(None, description="Precio manual (opcional)")
 
 
 class SaleResponse(BaseModel):
@@ -77,7 +109,14 @@ class SaleResponse(BaseModel):
     total: float = 0.0
     sold_at: datetime
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = DTOS_CONFIG
+    
+    @field_serializer('sold_at')
+    def serialize_datetime(self, dt: datetime) -> str:
+        """Serialize datetime to ISO 8601 string."""
+        if dt is None:
+            return None
+        return dt.isoformat()
     
     @model_validator(mode='after')
     def compute_total(self):
@@ -118,7 +157,14 @@ class ReservationResponse(BaseModel):
     is_active: bool
     created_at: datetime
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = DTOS_CONFIG
+    
+    @field_serializer('created_at')
+    def serialize_datetime(self, dt: datetime) -> str:
+        """Serialize datetime to ISO 8601 string."""
+        if dt is None:
+            return None
+        return dt.isoformat()
 
 
 class ReservationActivate(BaseModel):

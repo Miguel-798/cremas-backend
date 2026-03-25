@@ -4,8 +4,13 @@ Sale Entity - Domain Layer
 Representa una venta de cremas.
 """
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
+
+
+def _utc_now() -> datetime:
+    """Return current UTC time as timezone-aware datetime."""
+    return datetime.now(timezone.utc)
 
 
 @dataclass
@@ -28,7 +33,7 @@ class Sale:
     cream_name: str = ""
     quantity_sold: int = 0
     price: float = 0.0
-    sold_at: datetime = field(default_factory=datetime.utcnow)
+    sold_at: datetime = field(default_factory=_utc_now)
     
     def __post_init__(self):
         """Validaciones post-construcción."""

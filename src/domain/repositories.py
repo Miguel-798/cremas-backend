@@ -56,6 +56,11 @@ class SaleRepository(ABC):
     """Interfaz abstracta para repositorio de ventas."""
     
     @abstractmethod
+    async def get_by_id(self, sale_id: UUID) -> Optional[Sale]:
+        """Obtener venta por ID."""
+        pass
+    
+    @abstractmethod
     async def get_by_cream_id(self, cream_id: UUID) -> List[Sale]:
         """Obtener todas las ventas de una crema."""
         pass
@@ -68,6 +73,11 @@ class SaleRepository(ABC):
     @abstractmethod
     async def get_all(self) -> List[Sale]:
         """Obtener todas las ventas."""
+        pass
+    
+    @abstractmethod
+    async def delete(self, sale_id: UUID) -> bool:
+        """Eliminar una venta."""
         pass
 
 

@@ -95,6 +95,60 @@ class InventoryService:
         
         return result
     
+    async def update_cream(self, cream_id: UUID, flavor_name: Optional[str] = None, price: Optional[float] = None, quantity: Optional[int] = None) -> Cream:
+        """Actualizar crema (parcial - solo campos proporcionados)."""
+        cream = await self.cream_repo.get_by_id(cream_id)
+        if not cream:
+            raise ValueError(f"Crema no encontrada: {cream_id}")
+        
+        # Update only provided fields
+        if flavor_name is not None:
+            cream.flavor_name = flavor_name
+        if price is not None:
+            cream.price = price
+        if quantity is not None:
+            cream.quantity = quantity
+        
+        result = await self.cream_repo.update(cream)
+        
+        # Invalidate cache
+        invalidate_cache(
+            CacheKeys.creams(),
+            CacheKeys.cream_by_id(str(cream_id)),
+            CacheKeys.low_stock(),
+        )
+        log.debug("cache.invalidated", keys=["creams", "cream_by_id", "low_stock"])
+        
+        return result
+    
+    async def delete_sale(self, sale_id: UUID) -> bool:
+        """Eliminar una venta y restaurar el inventario."""
+        # Get the sale first
+        sale = await self.sale_repo.get_by_id(sale_id)
+        if not sale:
+            raise ValueError(f"Venta no encontrada: {sale_id}")
+        
+        # Restore inventory
+        cream = await self.cream_repo.get_by_id(sale.cream_id)
+        if cream:
+            cream.add_stock(sale.quantity_sold)
+            await self.cream_repo.update(cream)
+        
+        # Delete the sale
+        result = await self.sale_repo.delete(sale_id)
+        
+        # Invalidate cache
+        invalidate_cache(
+            CacheKeys.creams(),
+            CacheKeys.cream_by_id(str(sale.cream_id)),
+            CacheKeys.low_stock(),
+            CacheKeys.sales(),
+            CacheKeys.sales_by_cream(str(sale.cream_id)),
+        )
+        log.debug("cache.invalidated", keys=["creams", "cream_by_id", "low_stock", "sales"])
+        
+        return result
+    
     async def add_stock(self, cream_id: UUID, amount: int) -> Cream:
         """Agregar stock a una crema."""
         cream = await self.cream_repo.get_by_id(cream_id)

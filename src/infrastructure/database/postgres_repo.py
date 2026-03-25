@@ -135,6 +135,13 @@ class PostgresSaleRepository(SaleRepository):
             sold_at=entity.sold_at,
         )
     
+    async def get_by_id(self, sale_id: UUID) -> Optional[Sale]:
+        result = await self.session.execute(
+            select(SaleModel).where(SaleModel.id == str(sale_id))
+        )
+        model = result.scalar_one_or_none()
+        return self._to_entity(model) if model else None
+    
     async def get_by_cream_id(self, cream_id: UUID) -> List[Sale]:
         result = await self.session.execute(
             select(SaleModel)
@@ -157,6 +164,17 @@ class PostgresSaleRepository(SaleRepository):
         )
         models = result.scalars().all()
         return [self._to_entity(m) for m in models]
+    
+    async def delete(self, sale_id: UUID) -> bool:
+        result = await self.session.execute(
+            select(SaleModel).where(SaleModel.id == str(sale_id))
+        )
+        model = result.scalar_one_or_none()
+        if model:
+            await self.session.delete(model)
+            await self.session.commit()
+            return True
+        return False
 
 
 class PostgresReservationRepository(ReservationRepository):

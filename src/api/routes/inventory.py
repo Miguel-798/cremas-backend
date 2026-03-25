@@ -29,6 +29,7 @@ from src.application.services import (
 from src.application.dtos import (
     CreamCreate,
     CreamUpdate,
+    CreamPatch,
     CreamAddStock,
     CreamResponse,
     CreamWithStatus,
@@ -247,19 +248,24 @@ async def get_cream(
     return CreamResponse.model_validate(cream)
 
 
-# 5. PUT /creams/{cream_id} - Actualizar cantidad (requiere auth)
+# 5. PUT /creams/{cream_id} - Actualizar crema (requiere auth)
 @router.put("/{cream_id}", response_model=CreamResponse)
 @limiter.limit("20/minute")
 async def update_cream(
     request: Request,
     cream_id: UUID,
-    data: CreamUpdate,
+    data: CreamPatch,
     service: InventoryService = Depends(get_inventory_service),
     user: AuthUser = Depends(require_auth),
 ):
-    """Actualizar la cantidad de una crema."""
+    """Actualizar una crema (nombre, precio y/o cantidad)."""
     try:
-        cream = await service.update_cream_quantity(cream_id, data.quantity)
+        cream = await service.update_cream(
+            cream_id,
+            flavor_name=data.flavor_name,
+            price=data.price,
+            quantity=data.quantity,
+        )
         return CreamResponse.model_validate(cream)
     except ValueError as e:
         raise HTTPException(
@@ -331,6 +337,32 @@ async def get_all_sales(
     
     sales = await service.get_all_sales()
     return [SaleResponse.model_validate(s) for s in sales]
+
+
+# DELETE /creamssales/{sale_id} - Eliminar venta (requiere auth)
+@sales_router.delete("/creamssales/{sale_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("20/minute")
+async def delete_sale(
+    request: Request,
+    sale_id: UUID,
+    service: InventoryService = Depends(get_inventory_service),
+    user: AuthUser = Depends(require_auth),
+):
+    """Eliminar una venta y restaurar el inventario."""
+    request.state.user = user
+    
+    try:
+        deleted = await service.delete_sale(sale_id)
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Venta no encontrada: {sale_id}"
+            )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
 
 
 # 9. POST /creams/{cream_id}/sell - Registrar venta (requiere auth)

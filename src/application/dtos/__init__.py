@@ -43,6 +43,13 @@ class CreamUpdate(BaseModel):
     quantity: int = Field(..., ge=0, description="Nueva cantidad")
 
 
+class CreamPatch(BaseModel):
+    """DTO para actualizar crema (parcial - name, price, quantity opcionales)."""
+    flavor_name: Optional[str] = Field(None, min_length=1, max_length=255, description="Nombre del sabor")
+    price: Optional[float] = Field(None, ge=0, description="Precio de la crema")
+    quantity: Optional[int] = Field(None, ge=0, description="Cantidad")
+
+
 class CreamAddStock(BaseModel):
     """DTO para agregar stock."""
     amount: int = Field(..., gt=0, description="Cantidad a agregar")

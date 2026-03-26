@@ -8,6 +8,7 @@ app:
   allowed_origins:
     - "http://localhost:3000"
     - "https://cremas-sigma.vercel.app"
+    - "https://cremas-backend.onrender.com"
 
 database:
   url: ${DATABASE_URL}
